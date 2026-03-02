@@ -84,13 +84,35 @@ connectDB();
 const app = express();
 
 // ✅ Production CORS (important for your Vercel frontend)
+// app.use(cors({
+//     origin: (origin, callback) => {
+//         if (!origin || origin.startsWith("http://localhost")) {
+//             callback(null, true);
+//         } else {
+//             callback(new Error("Not allowed by CORS"));
+//         }
+//     },
+//     credentials: true
+// }));
+
+
+const allowedOrigins = [
+    "http://localhost:5173",
+    "http://localhost:5175",
+    "https://e-commerce-hazel-nine-67.vercel.app"
+];
+
 app.use(cors({
-    origin: [
-        "http://localhost:5173",
-        "https://e-commerce-hazel-nine-67.vercel.app"
-    ],
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error("Not allowed by CORS"));
+        }
+    },
     credentials: true
 }));
+
 
 app.use(express.json());
 
