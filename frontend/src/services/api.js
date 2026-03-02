@@ -3,7 +3,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "https://task-ecommerce-backend.onrender.com",
+    baseURL: "https://task-ecommerce-backend.onrender.com/api",
     headers: {
         "Content-Type": "application/json",
     },
