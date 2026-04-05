@@ -1,5 +1,40 @@
 @import "tailwindcss";
 
+/* 1. HIDE SCROLLBAR GLOBALLY (Technocratic Minimalist) */
+html {
+    /* For Firefox */
+    scrollbar-width: none;
+    /* For IE/Edge */
+    -ms-overflow-style: none;
+    /* Lenis handles the actual movement */
+    scroll-behavior: auto !important;
+}
+
+/* For Chrome, Safari, and newer Edge */
+::-webkit-scrollbar {
+    display: none;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+/* 2. LENIS ESSENTIALS (Liquid Movement) */
+html.lenis {
+    height: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+    overflow: hidden;
+}
+
+/* 3. GLOBAL BASE STYLES */
 html,
 body,
 #root {
@@ -8,29 +43,35 @@ body,
     width: 100%;
     height: 100%;
     background-color: #f9fafb;
-    /* Light gray background */
+    overflow-x: hidden;
 }
 
-/* Custom input style for forms */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    /* Selection styling for high-end brand feel */
+    @apply selection:bg-black selection:text-white;
+}
+
+/* 4. TECHNOCRATIC UI COMPONENTS */
 .input {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition;
+    @apply w-full px-4 py-3 border border-gray-200 rounded-2xl focus:ring-1 focus:ring-black focus:border-black outline-none transition-all duration-300 bg-white;
 }
 
 .nav-link {
-    @apply text-gray-600 hover:text-black px-3 py-2 rounded-md text-sm font-medium transition;
+    @apply text-gray-500 hover:text-black px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 tracking-tight;
 }
 
 .btn-primary {
-    @apply px-8 py-3 rounded-xl text-white font-semibold bg-black hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed transition;
+    @apply px-8 py-3.5 rounded-2xl text-white font-bold bg-black hover:bg-gray-900 shadow-sm hover:shadow-xl active:scale-95 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-500;
 }
 
 .btn-secondary {
-    @apply px-8 py-3 rounded-xl border border-gray-300 font-semibold hover:bg-gray-100 disabled:bg-gray-200 disabled:cursor-not-allowed transition;
+    @apply px-8 py-3.5 rounded-2xl border border-gray-200 font-bold hover:bg-gray-50 active:scale-95 disabled:bg-gray-200 disabled:cursor-not-allowed transition-all duration-500;
 }
 
-
-
-
+/* 5. ANIMATIONS */
 @keyframes scroll {
     0% {
         transform: translateX(0);
@@ -42,10 +83,5 @@ body,
 }
 
 .animate-scroll {
-    animation: scroll 20s linear infinite;
-}
-
-
-body {
-    overflow-x: hidden;
+    animation: scroll 30s linear infinite;
 }

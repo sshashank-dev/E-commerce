@@ -1,170 +1,141 @@
-
-
 import { motion } from "framer-motion";
-import { useRef } from "react";
+import {
+    ShoppingBag,
+    Truck,
+    ShieldCheck,
+    Zap,
+    ArrowRight,
+    Box,
+    Star,
+    Globe
+} from "lucide-react";
 
-const container = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.25 } },
+const fadeInUp = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
 };
 
-const item = {
-    hidden: { opacity: 0, y: 40 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } },
+const stagger = {
+    show: { transition: { staggerChildren: 0.1 } }
 };
-
-function Stat({ number, label }) {
-    return (
-        <motion.div
-            whileHover={{ scale: 1.15, rotate: 2 }}
-            className="text-center bg-white rounded-3xl shadow-xl p-6 cursor-pointer hover:shadow-2xl transition-all"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-        >
-            <h3 className="text-4xl md:text-5xl font-extrabold text-gray-900">{number}</h3>
-            <p className="text-gray-500 mt-2 text-sm md:text-base">{label}</p>
-        </motion.div>
-    );
-}
 
 export default function AboutPage() {
-    const ref = useRef(null);
-
     return (
-        <div ref={ref} className="relative overflow-hidden bg-gray-50 min-h-screen pt-28 pb-24">
+        <div className=" bg-gray-100 min-h-screen pt-24 pb-20 font-sans selection:bg-emerald-500 selection:text-white">
 
-            {/* ===== Floating Background Orbs ===== */}
-            <motion.div
-                className="absolute -top-40 -left-40 w-[500px] h-[500px] bg-purple-300 opacity-20 rounded-full blur-3xl"
-                animate={{ rotate: 360 }}
-                transition={{ repeat: Infinity, duration: 120, ease: "linear" }}
-            />
-            <motion.div
-                className="absolute top-60 -right-40 w-[500px] h-[500px] bg-blue-300 opacity-20 rounded-full blur-3xl"
-                animate={{ rotate: -360 }}
-                transition={{ repeat: Infinity, duration: 150, ease: "linear" }}
-            />
+            {/* --- App Background Pattern --- */}
+            <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
+                style={{ backgroundImage: `radial-gradient(#000 1px, transparent 1px)`, backgroundSize: '32px 32px' }} />
 
-            {/* ================= HERO ================= */}
-            <section className="max-w-6xl mx-auto px-6 text-center relative z-10">
-                <motion.div
-                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ duration: 1 }}
-                >
-                    <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 leading-tight">
-                        Experience Shopping Reimagined
-                    </h1>
-                    <p className="mt-6 text-gray-600 text-lg max-w-3xl mx-auto">
-                        Built with performance, trust, and delightful interactions — just like world-class ecommerce platforms.
-                    </p>
+            <div className="max-w-6xl mx-auto px-6 relative z-10">
 
-                    <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: 180 }}
-                        transition={{ delay: 0.5, duration: 0.9, ease: "easeOut" }}
-                        className="h-1 bg-purple-600 mx-auto mt-8 rounded-full"
-                    />
-                </motion.div>
-            </section>
+                {/* --- COMPACT HERO --- */}
+                <header className="mb-20">
+                    <motion.div initial="hidden" animate="show" variants={fadeInUp}>
+                        <div className="flex items-center gap-2 mb-6">
+                            <div className="w-8 h-8 bg-zinc-900 rounded-lg flex items-center justify-center">
+                                <ShoppingBag size={16} className="text-emerald-500" />
+                            </div>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">About Sellora</span>
+                        </div>
 
-            {/* ================= STATS ================= */}
-            <section className="max-w-5xl mx-auto px-6 mt-24 grid grid-cols-2 md:grid-cols-4 gap-8">
-                <Stat number="10K+" label="Orders Delivered" />
-                <Stat number="5K+" label="Happy Customers" />
-                <Stat number="99%" label="Satisfaction Rate" />
-                <Stat number="24/7" label="Support Available" />
-            </section>
+                        <h1 className="text-5xl md:text-6xl font-black text-zinc-900 tracking-tighter leading-none mb-6">
+                            The ecosystem for <br />
+                            <span className="text-emerald-600 italic">modern commerce.</span>
+                        </h1>
 
-            {/* ================= STORY ================= */}
-            <section className="max-w-6xl mx-auto px-6 mt-32 grid md:grid-cols-2 gap-16 items-center">
-                <motion.div
-                    variants={container}
+                        <p className="text-zinc-500 text-base md:text-lg max-w-2xl leading-relaxed font-medium">
+                            Based in Jaipur, Sellora is built to simplify high-end retail. We connect premium global brands with a seamless, automated delivery infrastructure.
+                        </p>
+                    </motion.div>
+                </header>
+
+                {/* --- APP-STYLE STATS GRID --- */}
+                <motion.section
+                    variants={stagger}
                     initial="hidden"
                     whileInView="show"
                     viewport={{ once: true }}
+                    className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-24"
                 >
-                    <motion.h2 variants={item} className="text-3xl font-bold text-gray-900 mb-4">
-                        Our Story
-                    </motion.h2>
-                    <motion.p variants={item} className="text-gray-600 leading-relaxed mb-4">
-                        Your ecommerce platform is designed to deliver a smooth, animated, and trustworthy shopping experience.
-                    </motion.p>
-                    <motion.p variants={item} className="text-gray-600 leading-relaxed">
-                        From cart to checkout to order celebration — every interaction is crafted to feel premium and effortless.
-                    </motion.p>
-                </motion.div>
-
-                <motion.div
-                    initial={{ opacity: 0, x: 100, scale: 0.95 }}
-                    whileInView={{ opacity: 1, x: 0, scale: 1 }}
-                    transition={{ duration: 1, ease: "easeOut" }}
-                    viewport={{ once: true }}
-                    whileHover={{ scale: 1.08, rotate: 1 }}
-                    className="relative group"
-                >
-                    <img
-                        src="https://images.unsplash.com/photo-1521737604893-d14cc237f11d"
-                        alt="Team"
-                        className="rounded-3xl shadow-2xl w-full object-cover transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 rounded-3xl border border-white/40 group-hover:border-purple-400 transition" />
-                </motion.div>
-            </section>
-
-            {/* ================= VALUES ================= */}
-            <section className="max-w-7xl mx-auto px-6 mt-32">
-                <motion.h2
-                    initial={{ opacity: 0, y: 40 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="text-3xl font-bold text-center text-gray-900 mb-14"
-                >
-                    Why Customers Trust Us
-                </motion.h2>
-
-                <motion.div
-                    variants={container}
-                    initial="hidden"
-                    whileInView="show"
-                    viewport={{ once: true }}
-                    className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8"
-                >
-                    {["Premium Quality", "Fast Delivery", "Secure Payments", "Customer First"].map((title, i) => (
+                    {[
+                        { label: "Products", val: "12k+", icon: Box },
+                        { label: "Dispatch", val: "24h", icon: Zap },
+                        { label: "Trust", val: "99.9%", icon: Star },
+                        { label: "Network", val: "Global", icon: Globe }
+                    ].map((stat, i) => (
                         <motion.div
                             key={i}
-                            variants={item}
-                            whileHover={{ y: -10, scale: 1.07, boxShadow: "0px 20px 40px rgba(0,0,0,0.15)" }}
-                            className="relative p-[1px] rounded-2xl bg-gradient-to-br from-purple-500 to-blue-500"
+                            variants={fadeInUp}
+                            className="bg-white border border-zinc-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow group"
                         >
-                            <div className="bg-white rounded-2xl p-8 text-center h-full transition-all">
-                                <h3 className="text-xl font-bold text-gray-900 mb-2">{title}</h3>
-                                <p className="text-gray-500 text-sm md:text-base">
-                                    Professional experience you can rely on.
-                                </p>
-                            </div>
+                            <stat.icon size={18} className="text-zinc-300 group-hover:text-emerald-500 mb-4 transition-colors" />
+                            <h3 className="text-3xl font-black text-zinc-900 tracking-tighter">{stat.val}</h3>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mt-1">{stat.label}</p>
                         </motion.div>
                     ))}
-                </motion.div>
-            </section>
+                </motion.section>
 
-            {/* ================= MISSION ================= */}
-            <section className="max-w-4xl mx-auto px-6 mt-32 text-center">
-                <motion.div
-                    initial={{ opacity: 0, y: 100 }}
+                {/* --- CLEAN CONTENT BLOCK --- */}
+                <section className="grid lg:grid-cols-2 gap-12 items-center mb-24">
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        className="space-y-8"
+                    >
+                        <h2 className="text-3xl font-black text-zinc-900 tracking-tight">Our Infrastructure</h2>
+
+                        <div className="space-y-6">
+                            {[
+                                { title: "Quality Sourcing", desc: "Every item in our catalog is verified for authenticity and performance.", icon: ShieldCheck },
+                                { title: "Swift Fulfillment", desc: "Automated logistics from our Jaipur hub ensures record-breaking delivery.", icon: Truck }
+                            ].map((item, i) => (
+                                <div key={i} className="flex gap-5">
+                                    <div className="w-10 h-10 bg-zinc-50 rounded-xl flex items-center justify-center shrink-0">
+                                        <item.icon size={20} className="text-zinc-900" />
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-zinc-900 mb-1">{item.title}</h4>
+                                        <p className="text-sm text-zinc-500 font-medium leading-relaxed">{item.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </motion.div>
+
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        className="bg-zinc-100 rounded-3xl aspect-video relative overflow-hidden"
+                    >
+                        <img
+                            src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1000&auto=format&fit=crop"
+                            alt="Warehouse"
+                            className="w-full h-full object-cover grayscale opacity-50"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900/40 to-transparent" />
+                    </motion.div>
+                </section>
+
+                {/* --- COMPACT CTA --- */}
+                <motion.section
+                    initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1, ease: "easeOut" }}
                     viewport={{ once: true }}
-                    className="bg-white rounded-3xl shadow-2xl p-14 hover:shadow-3xl transition-shadow"
+                    className="bg-zinc-900 rounded-[2.5rem] p-10 md:p-16 text-center relative overflow-hidden"
                 >
-                    <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Mission</h2>
-                    <p className="text-gray-600 leading-relaxed text-lg">
-                        To create an ecommerce experience that feels effortless, beautiful, and trustworthy — from first click to final delivery.
-                    </p>
-                </motion.div>
-            </section>
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-[80px]" />
+                    <h2 className="text-4xl font-black text-white tracking-tighter mb-8 relative z-10">
+                        Experience the <br /> Sellora advantage.
+                    </h2>
+                    <button className="bg-emerald-500 text-zinc-900 px-8 py-4 rounded-full font-black uppercase text-[10px] tracking-widest flex items-center gap-2 mx-auto relative z-10 shadow-xl shadow-emerald-500/20 hover:scale-105 transition-transform">
+                        Start Shopping <ArrowRight size={14} />
+                    </button>
+                </motion.section>
+
+            </div>
         </div>
     );
 }

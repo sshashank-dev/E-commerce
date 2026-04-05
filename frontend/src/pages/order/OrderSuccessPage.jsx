@@ -1,16 +1,8 @@
-
-
-
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import {
-    FaCheckCircle,
-    FaBoxOpen,
-    FaHome,
-    FaShoppingBag,
-    FaMapMarkerAlt,
-} from "react-icons/fa";
+import { Check, Home, ShoppingBag, MapPin, Package, ChevronRight } from "lucide-react";
 import confetti from "canvas-confetti";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "../../hooks/useAuth";
 import { useCart } from "../../hooks/useCart";
 
@@ -20,224 +12,182 @@ export default function OrderSuccessPage() {
     const { user } = useAuth();
     const { clearCart } = useCart();
 
-    const [exiting, setExiting] = useState(false);
+    const order = location.state?.order || JSON.parse(localStorage.getItem("lastOrder"));
 
-    const order =
-        location.state?.order ||
-        JSON.parse(localStorage.getItem("lastOrder"));
-
-    const customerName =
-        user?.name ||
-        order?.shippingAddress?.fullName ||
-        "Customer";
-
+    const customerName = user?.name || order?.shippingAddress?.fullName || "Customer";
     const deliveryDate = new Date();
     deliveryDate.setDate(deliveryDate.getDate() + 5);
 
-    // 🎉 PREMIUM CONFETTI CELEBRATION
+    // 🎉 HIGH-PERFORMANCE CONFETTI
     const fireCelebration = () => {
-        const duration = 2500;
-        const end = Date.now() + duration;
-        const colors = ["#16a34a", "#22c55e", "#4ade80", "#86efac"];
+        const count = 200;
+        const defaults = { origin: { y: 0.7 }, zIndex: 1000 };
 
-        confetti({
-            particleCount: 180,
-            spread: 120,
-            startVelocity: 45,
-            gravity: 0.9,
-            ticks: 200,
-            origin: { x: 0.5, y: 0.55 },
-            colors,
-            scalar: 1.2,
-        });
-
-        (function frame() {
+        function fire(particleRatio, opts) {
             confetti({
-                particleCount: 3,
-                angle: 75,
-                spread: 60,
-                origin: { x: 0.1, y: 1 },
-                colors,
+                ...defaults,
+                ...opts,
+                particleCount: Math.floor(count * particleRatio),
+                colors: ["#000000", "#22c55e", "#ffffff"], // Match brand colors
             });
+        }
 
-            confetti({
-                particleCount: 3,
-                angle: 105,
-                spread: 60,
-                origin: { x: 0.9, y: 1 },
-                colors,
-            });
-
-            if (Date.now() < end) requestAnimationFrame(frame);
-        })();
+        fire(0.25, { spread: 26, startVelocity: 55 });
+        fire(0.2, { spread: 60 });
+        fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+        fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+        fire(0.1, { spread: 120, startVelocity: 45 });
     };
 
     useEffect(() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        window.scrollTo(0, 0);
         clearCart();
         fireCelebration();
     }, []);
 
-    const goWithAnimation = (path) => {
-        setExiting(true);
-        setTimeout(() => navigate(path), 500);
-    };
-
     if (!order) {
         return (
-            <div className="text-center py-24">
-                <h2 className="text-2xl font-semibold">No order found</h2>
-                <button
-                    onClick={() => navigate("/")}
-                    className="mt-4 px-6 py-3 bg-black text-white rounded-xl"
-                >
-                    Go Home
-                </button>
+            <div className="min-h-screen flex flex-col items-center justify-center space-y-4">
+                <h2 className="text-xl font-bold">No order found</h2>
+                <button onClick={() => navigate("/")} className="px-6 py-2 bg-zinc-900 text-white rounded-full">Go Home</button>
             </div>
         );
     }
 
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: { staggerChildren: 0.1, delayChildren: 0.2 }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { y: 20, opacity: 0 },
+        visible: { y: 0, opacity: 1, transition: { type: "spring", stiffness: 100, damping: 15 } }
+    };
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4 py-16">
-            <div className={`max-w-5xl w-full animate-fadeInUp ${exiting ? "animate-exit" : ""}`}>
+        <div className="min-h-screen bg-gray-100 pt-32 pb-20 px-4 overflow-x-hidden">
+            <motion.div
+                variants={containerVariants}
+                initial="hidden"
+                animate="visible"
+                className="max-w-4xl mx-auto space-y-6"
+            >
+                {/* SUCCESS CARD */}
+                <motion.div variants={itemVariants} className="bg-white rounded-[2.5rem] p-10 text-center border border-zinc-100 shadow-sm relative overflow-hidden">
+                    <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", stiffness: 200, delay: 0.4 }}
+                        className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-200"
+                    >
+                        <Check className="text-white" size={40} strokeWidth={3} />
+                    </motion.div>
 
-                {/* SUCCESS HERO */}
-                <div className="bg-white rounded-3xl shadow-2xl p-10 text-center relative overflow-hidden">
-                    <FaCheckCircle className="text-green-500 text-8xl mx-auto animate-pop" />
-
-                    <h1 className="text-4xl font-bold mt-6">
-                        Order Confirmed 🎉
-                    </h1>
-
-                    <p className="text-gray-600 mt-3 text-lg">
-                        Thank you for shopping with us, <span className="font-semibold">{customerName}</span>
+                    <h1 className="text-4xl font-black text-zinc-900 tracking-tight">Order Confirmed!</h1>
+                    <p className="text-zinc-500 mt-3 font-medium text-lg">
+                        High five, <span className="text-zinc-900 font-bold">{customerName}</span>! Your order is on the way.
                     </p>
-                </div>
 
-                {/* ORDER INFO */}
-                <div className="grid md:grid-cols-2 gap-6 mt-8">
-                    <div className="bg-white rounded-2xl shadow-lg p-6 animate-slideUp">
-                        <div className="flex items-center gap-3 mb-4">
-                            <FaBoxOpen />
-                            <h2 className="text-xl font-semibold">Order Summary</h2>
+                    <div className="mt-8 pt-8 border-t border-zinc-50 flex flex-wrap justify-center gap-8">
+                        <div className="text-center">
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Order ID</p>
+                            <p className="font-bold text-zinc-900">#{order._id.slice(-8).toUpperCase()}</p>
                         </div>
-
-                        <div className="space-y-3 text-gray-700">
-                            <div className="flex justify-between">
-                                <span>Order ID</span>
-                                <span className="font-medium">{order._id}</span>
-                            </div>
-
-                            <div className="flex justify-between">
-                                <span>Total Paid</span>
-                                <span className="text-lg font-bold text-green-600">
-                                    ₹{order.totalPrice}
-                                </span>
-                            </div>
-
-                            <div className="flex justify-between">
-                                <span>Estimated Delivery</span>
-                                <span>{deliveryDate.toDateString()}</span>
-                            </div>
+                        <div className="text-center">
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Status</p>
+                            <p className="font-bold text-emerald-600">Processing</p>
+                        </div>
+                        <div className="text-center">
+                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Arriving By</p>
+                            <p className="font-bold text-zinc-900">{deliveryDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
                         </div>
                     </div>
+                </motion.div>
 
-                    <div className="bg-white rounded-2xl shadow-lg p-6 animate-slideUp delay-100">
-                        <div className="flex items-center gap-3 mb-4">
-                            <FaMapMarkerAlt />
-                            <h2 className="text-xl font-semibold">Delivery Address</h2>
+                <div className="grid md:grid-cols-2 gap-6">
+                    {/* DETAILS CARD */}
+                    <motion.div variants={itemVariants} className="bg-white rounded-[2rem] p-8 border border-zinc-100 shadow-sm">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="p-2 bg-zinc-100 rounded-lg text-zinc-900">
+                                <MapPin size={20} />
+                            </div>
+                            <h2 className="text-lg font-bold">Delivery Address</h2>
                         </div>
+                        <div className="space-y-1">
+                            <p className="font-bold text-zinc-900">{order.shippingAddress.fullName}</p>
+                            <p className="text-sm text-zinc-500 leading-relaxed">
+                                {order.shippingAddress.address}<br />
+                                {order.shippingAddress.city}, {order.shippingAddress.postalCode}
+                            </p>
+                            <p className="text-sm font-medium text-zinc-900 mt-2">{order.shippingAddress.phone}</p>
+                        </div>
+                    </motion.div>
 
-                        <p className="font-medium">{order.shippingAddress.fullName}</p>
-                        <p className="text-gray-600">
-                            {order.shippingAddress.address},
-                            {order.shippingAddress.city},
-                            {order.shippingAddress.postalCode}
-                        </p>
-                        <p className="text-gray-600">{order.shippingAddress.phone}</p>
-                    </div>
-                </div>
-
-                {/* ITEMS */}
-                {order.orderItems && (
-                    <div className="bg-white rounded-2xl shadow-lg p-6 mt-8 animate-slideUp delay-200">
-                        <h2 className="text-xl font-semibold mb-6">Items Ordered</h2>
-
-                        <div className="space-y-4">
-                            {order.orderItems.map((item) => (
-                                <div
-                                    key={item.product}
-                                    className="flex items-center gap-4 border rounded-xl p-4 hover:shadow-md transition"
-                                >
-                                    <img
-                                        src={item.image}
-                                        alt={item.name}
-                                        className="w-16 h-16 object-contain"
-                                    />
-
-                                    <div className="flex-1">
-                                        <p className="font-medium">{item.name}</p>
-                                        <p className="text-sm text-gray-500">
-                                            {item.qty} × ₹{item.price}
-                                        </p>
-                                    </div>
-
-                                    <p className="font-semibold">
-                                        ₹{item.qty * item.price}
-                                    </p>
+                    {/* PAYMENT SUMMARY */}
+                    <motion.div variants={itemVariants} className="bg-white rounded-[2rem] p-8 border border-zinc-100 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="p-2 bg-zinc-100 rounded-lg text-zinc-900">
+                                    <Package size={20} />
                                 </div>
-                            ))}
+                                <h2 className="text-lg font-bold">Payment Summary</h2>
+                            </div>
+                            <div className="space-y-3">
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-zinc-500 font-medium">Subtotal</span>
+                                    <span className="font-bold">₹{order.totalPrice}</span>
+                                </div>
+                                <div className="flex justify-between text-sm">
+                                    <span className="text-zinc-500 font-medium">Shipping</span>
+                                    <span className="text-emerald-600 font-bold">Free</span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                )}
-
-                {/* ACTIONS */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10 animate-fadeIn">
-                    <button
-                        onClick={() => goWithAnimation("/")}
-                        className="flex items-center justify-center gap-2 px-8 py-4 bg-black text-white rounded-xl hover:scale-105 transition"
-                    >
-                        <FaHome />
-                        Go Home
-                    </button>
-
-                    <button
-                        onClick={() => goWithAnimation("/products")}
-                        className="flex items-center justify-center gap-2 px-8 py-4 border border-black rounded-xl hover:bg-black hover:text-white transition"
-                    >
-                        <FaShoppingBag />
-                        Continue Shopping
-                    </button>
+                        <div className="mt-6 pt-6 border-t border-zinc-50 flex justify-between items-end">
+                            <span className="text-xs font-black uppercase tracking-widest text-zinc-400">Total Paid</span>
+                            <span className="text-3xl font-black text-zinc-900">₹{order.totalPrice}</span>
+                        </div>
+                    </motion.div>
                 </div>
-            </div>
 
-            <style>{`
-        .animate-fadeInUp { animation: fadeInUp 0.7s ease forwards; }
-        .animate-slideUp { animation: slideUp 0.6s ease forwards; }
-        .animate-pop { animation: pop 0.5s ease forwards; }
-        .animate-exit { animation: exitPage 0.5s ease forwards; }
+                {/* ITEMS LIST */}
+                <motion.div variants={itemVariants} className="bg-white rounded-[2rem] p-8 border border-zinc-100 shadow-sm">
+                    <h2 className="text-lg font-bold mb-6">Items Purchased</h2>
+                    <div className="divide-y divide-zinc-50">
+                        {order.orderItems.map((item) => (
+                            <div key={item.product} className="py-4 flex items-center gap-4 group">
+                                <img src={item.image} alt={item.name} className="w-14 h-14 rounded-xl object-cover bg-zinc-50 border border-zinc-100" />
+                                <div className="flex-1">
+                                    <p className="font-bold text-zinc-900 text-sm">{item.name}</p>
+                                    <p className="text-xs text-zinc-500 font-medium">{item.qty} × ₹{item.price}</p>
+                                </div>
+                                <p className="font-black text-zinc-900 text-sm">₹{item.qty * item.price}</p>
+                            </div>
+                        ))}
+                    </div>
+                </motion.div>
 
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(40px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes slideUp {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes pop {
-          0% { transform: scale(0.6); opacity: 0; }
-          80% { transform: scale(1.15); }
-          100% { transform: scale(1); opacity: 1; }
-        }
-
-        @keyframes exitPage {
-          from { opacity: 1; transform: scale(1); }
-          to { opacity: 0; transform: scale(0.95) translateY(30px); }
-        }
-      `}</style>
+                {/* NAVIGATION ACTIONS */}
+                <motion.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 pt-4">
+                    <button
+                        onClick={() => navigate("/")}
+                        className="flex-1 flex items-center justify-center gap-2 px-8 py-4 bg-zinc-900 text-white rounded-2xl font-bold hover:bg-zinc-800 transition-all active:scale-[0.98] shadow-xl shadow-zinc-200"
+                    >
+                        <Home size={18} />
+                        Back to Home
+                    </button>
+                    <button
+                        onClick={() => navigate("/my-orders")}
+                        className="flex-1 flex items-center justify-center gap-2 px-8 py-4 bg-white text-zinc-900 border border-zinc-200 rounded-2xl font-bold hover:bg-zinc-50 transition-all active:scale-[0.98]"
+                    >
+                        Track Order
+                        <ChevronRight size={18} />
+                    </button>
+                </motion.div>
+            </motion.div>
         </div>
     );
 }

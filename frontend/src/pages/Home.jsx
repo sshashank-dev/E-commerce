@@ -1,5 +1,3 @@
-
-
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import { useCart } from "../hooks/useCart";
@@ -9,6 +7,7 @@ import PromoBanner from "../components/ui/PromoBanner";
 import ContactSection from "../components/ui/ContactSection";
 import AboutPage from "./AboutPage";
 import HeroSlider from "../components/HeroSlider";
+
 export default function Home() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -29,18 +28,28 @@ export default function Home() {
         fetchProducts();
     }, []);
 
+    // 1. Filter Logic
     const bestSellers = products.filter((p) => p.isBestSeller);
     const featuredProducts = products.filter((p) => p.isFeatured);
 
-    const primaryPromoId = featuredProducts[0]?._id;
-    const secondaryPromoId = featuredProducts[1]?._id;
+    // 2. Precise ID Mapping (Fixes the "wrong product opening" issue)
+    // We look specifically for the names to ensure the banner matches the link
+    const iphoneProduct = featuredProducts.find(p =>
+        p.name.toLowerCase().includes('iphone')
+    );
+    const samsungProduct = featuredProducts.find(p =>
+        p.name.toLowerCase().includes('samsung')
+    );
+
+    // Fallbacks in case specific names aren't found
+    const primaryPromoId = iphoneProduct?._id || featuredProducts[0]?._id;
+    const secondaryPromoId = samsungProduct?._id || featuredProducts[1]?._id;
     const thirdPromoId = featuredProducts[2]?._id;
 
     if (loading) return <div className="text-center py-20">Loading...</div>;
 
     return (
         <>
-            {/* Main page container */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-28 py-12">
 
                 {/* HERO */}
@@ -56,8 +65,8 @@ export default function Home() {
                     </div>
                 </section>
 
-                {/* SECOND PROMO BANNER (SINGLE PRODUCT) */}
-                {thirdPromoId && (
+                {/* IPHONE BANNER - Fixed to primaryPromoId */}
+                {primaryPromoId && (
                     <PromoBanner
                         primaryProductId={primaryPromoId}
                         badgeText="No Cost EMI Available"
@@ -78,32 +87,24 @@ export default function Home() {
                     </section>
                 )}
 
-                {/* PROMO BANNER (DUAL PRODUCT + OFFER) */}
-                {primaryPromoId && (
+                {/* SAMSUNG BANNER - Fixed to secondaryPromoId */}
+                {secondaryPromoId && (
                     <PromoBanner
-                        primaryProductId={thirdPromoId} primaryPromoId
-                        secondaryProductId={secondaryPromoId}
+                        primaryProductId={secondaryPromoId}
+                        secondaryProductId={thirdPromoId}
                         badgeText="Save ₹10,000 with Exchange"
                         primaryBannerImage="https://mir-s3-cdn-cf.behance.net/project_modules/fs/e36a04153586409.6332b1f042f2f.png"
                         secondaryBannerImage="https://example.com/samsung-buds-banner.png"
                     />
                 )}
-
-
-
             </div>
 
-
-            <h1 className="font-apple text-5xl md:text-5xl font-bold text-black text-center pb-10 pt-2">
-                Endless Entertainment.
+            <h1 className="text-5xl md:text-7xl font-black text-zinc-900 text-center pb-10 pt-2 tracking-tighter uppercase italic leading-[0.8] font-sans">
+                Endless <br /> Entertainment
             </h1>
 
-
-
-            {/* HERO SLIDER - FULL WIDTH OUTSIDE CONTAINER */}
+            {/* HERO SLIDER */}
             <HeroSlider />
-
-
 
             <div className="mt-20">
                 <ContactSection />
